@@ -1,35 +1,23 @@
-name: Update Torn Data Daily
+name: Run Torn Daily Script
 
 on:
-  schedule:
-    - cron: "0 0 * * *"  # Every day at midnight UTC
-  workflow_dispatch:     # Optional: lets you trigger it manually
-
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install requests
+    - name: Install dependencies
+      run: pip install -r requirements.txt
 
-      - name: Run script
-        run: python torn_daily.py
-
-      - name: Commit data.json
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add data.json
-          git commit -m "Update data.json"
-          git push
+    - name: Run script
+      run: python torn_daily.py
