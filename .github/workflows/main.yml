@@ -1,0 +1,30 @@
+name: Daily Torn Company Fetch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # every day at 00:00 UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TORN_API_KEY: ${{ secrets.TORN_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Torn script
+        run: python torn_daily.py
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add static/daily_companies.json
+          git commit -m "Update company data [skip ci]" || echo "No changes"
+          git push
